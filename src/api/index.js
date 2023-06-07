@@ -14,6 +14,6 @@ export class ApiClass {
   }
 
   async getDict(dict) {
-    return await this.axiosCall({ method: GET, url: `` });
+    return await this.axiosCall({ method: GET, url: `/GetDictionaryItems/${dict}` });
   }
 }

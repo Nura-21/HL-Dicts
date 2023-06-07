@@ -58,10 +58,19 @@ export const useStore = defineStore('store', {
     },
     // TASK 1 - Function to get each Dict
     async getDict(dict) {
+      if (!dict) return;
       this.isLoading = true;
       try {
+        const dictValue = await this.api.getDict(dict);
+        if (dictValue) {
+          return dictValue;
+        } else {
+          throw new Error('Нету значения');
+        }
       } catch (err) {
         console.log(err);
+      } finally {
+        this.isLoading = false;
       }
     },
   },
