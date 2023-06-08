@@ -39,21 +39,25 @@ export const useStore = defineStore('store', {
       return this[whichField];
     },
     async getAllDicts() {
-      this.isLoading = true;
-      try {
-        if (this.dicts.length > 0) {
-          return this.dicts;
+      const dictsInLocalStorage = JSON.parse(localStorage.getItem('dictsInLocalStorage'));
+      if (!dictsInLocalStorage) {
+        try {
+          this.isLoading = true;
+          const allDicts = await this.api.getAllDicts();
+          if (allDicts) {
+            this.dicts = Object.values(allDicts);
+            localStorage.setItem('dictsInLocalStorage', JSON.stringify(this.dicts));
+            console.log('From getAllDicts, if there is initially no dicts:' + this.dictsInLocalStorage);
+          } else {
+            throw new Error('Нету значения');
+          }
+        } catch (err) {
+          console.log(err);
+        } finally {
+          this.isLoading = false;
         }
-        const allDicts = await this.api.getAllDicts();
-        if (allDicts) {
-          this.dicts = Object.values(allDicts);
-        } else {
-          throw new Error('Нету значения');
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        this.isLoading = false;
+      } else {
+        this.dicts = dictsInLocalStorage;
       }
     },
     // TASK 1 - Function to get each Dict

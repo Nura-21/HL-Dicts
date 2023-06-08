@@ -22,7 +22,6 @@ export default {
 
     onMounted(async () => {
       dictValue.value = await store.getDict(dictName);
-      console.log('From Dict page: ' + dictValue.value);
     });
 
     return {
