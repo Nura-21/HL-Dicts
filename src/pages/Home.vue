@@ -28,6 +28,7 @@ export default {
 
     onMounted(async () => {
       await store.getAllDicts();
+      // await store.getFromApi('dicts', 'getAllDicts', []);
     });
 
     return {

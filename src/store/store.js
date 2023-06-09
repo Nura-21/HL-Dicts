@@ -26,8 +26,9 @@ export const useStore = defineStore('store', {
         try {
           const response = await this.api[whichRequest](parameters);
           if (response) {
+            this[whichField] = Object.values(response);
             localStorage.setItem(whichField, JSON.stringify({ value: response, hour: currentHour }));
-            this[whichField] = response;
+            console.log(whichField + '\n' + this[whichField]);
           }
         } catch (err) {
           console.log(err);
@@ -39,15 +40,23 @@ export const useStore = defineStore('store', {
       return this[whichField];
     },
     async getAllDicts() {
-      const dictsInLocalStorage = JSON.parse(localStorage.getItem('dictsInLocalStorage'));
-      if (!dictsInLocalStorage) {
+      const storageValue = JSON.parse(localStorage.getItem('dictsInLocalStorage'));
+      const currentHour = new Date().getHours();
+
+      const getDataCondition = () => {
+        if (!storageValue) return true;
+        const hasHourKey = 'hour' in storageValue;
+        const hasValueKey = 'value' in storageValue;
+        if (storageValue && (hasHourKey === false || hasValueKey === false)) return true;
+        if (storageValue && (storageValue.hour !== currentHour || storageValue.value.length === 0)) return true;
+      };
+      if (getDataCondition()) {
         try {
           this.isLoading = true;
           const allDicts = await this.api.getAllDicts();
           if (allDicts) {
             this.dicts = Object.values(allDicts);
-            localStorage.setItem('dictsInLocalStorage', JSON.stringify(this.dicts));
-            console.log('From getAllDicts, if there is initially no dicts:' + this.dictsInLocalStorage);
+            localStorage.setItem('dictsInLocalStorage', JSON.stringify({ value: this.dicts, hour: currentHour }));
           } else {
             throw new Error('Нету значения');
           }
@@ -57,7 +66,7 @@ export const useStore = defineStore('store', {
           this.isLoading = false;
         }
       } else {
-        this.dicts = dictsInLocalStorage;
+        this.dicts = storageValue.value;
       }
     },
     // TASK 1 - Function to get each Dict
