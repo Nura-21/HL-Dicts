@@ -58,7 +58,7 @@ export const useStore = defineStore('store', {
             this.dicts = Object.values(allDicts);
             localStorage.setItem('dictsInLocalStorage', JSON.stringify({ value: this.dicts, hour: currentHour }));
           } else {
-            throw new Error('Нету значения');
+            throw new Error('No value');
           }
         } catch (err) {
           console.log(err);
@@ -70,15 +70,19 @@ export const useStore = defineStore('store', {
       }
     },
     // TASK 1 - Function to get each Dict
-    async getDict(dict) {
+    async getDict(dict, reset = false) {
       if (!dict) return;
+      if (this[dict] && this[dict].length && !reset) {
+        return this[dict];
+      }
       this.isLoading = true;
       try {
         const dictValue = await this.api.getDict(dict);
         if (dictValue) {
+          this[dict] = dictValue;
           return dictValue;
         } else {
-          throw new Error('Нету значения');
+          throw new Error('No value');
         }
       } catch (err) {
         console.log(err);

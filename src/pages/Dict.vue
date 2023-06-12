@@ -2,6 +2,7 @@
   <section>
     <v-card v-if="dictValue">
       <v-list>
+        <v-btn @click="updateDict()" rounded="xl" class="ml-5">Update dict</v-btn>
         <v-list-subheader>Dictionary name: {{ dictName }}</v-list-subheader>
         <v-list-item v-for="(dict, index) of dictValue" :key="index" :value="dict">
           <v-list-item-title>{{ dict.nameRu }}</v-list-item-title>
@@ -20,6 +21,11 @@ export default {
     const dictName = route.params.dict;
     const dictValue = ref([]);
 
+    const updateDict = async () => {
+      dictValue.value = await store.getDict(dictName, true);
+      // console.log('This dict is updated by new values: ' + dictValue.value);
+    };
+
     onMounted(async () => {
       dictValue.value = await store.getDict(dictName);
     });
@@ -28,6 +34,7 @@ export default {
       store,
       dictName,
       dictValue,
+      updateDict,
     };
   },
 };

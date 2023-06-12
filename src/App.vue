@@ -9,7 +9,7 @@
         :width="10"
         indeterminate
       ></v-progress-circular>
-      <component :is="Component" />
+      <component v-else :is="Component" />
     </router-view>
   </v-app>
 </template>
